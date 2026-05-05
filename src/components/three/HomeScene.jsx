@@ -23,24 +23,24 @@ export default function HomeScene() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
     scene.add(new THREE.AmbientLight(0xffffff, 0.65))
-    const dirLight = new THREE.DirectionalLight(0x4f46e5, 1.3)
+    const dirLight = new THREE.DirectionalLight(0x10b981, 1.3)
     dirLight.position.set(5, 10, 7)
     scene.add(dirLight)
 
     const walls = new THREE.Mesh(
       new THREE.BoxGeometry(2, 1.5, 2),
-      new THREE.MeshPhongMaterial({ color: 0x4f46e5, emissive: 0x4f46e5, emissiveIntensity: 0.1 }),
+      new THREE.MeshPhongMaterial({ color: 0x10b981, emissive: 0x10b981, emissiveIntensity: 0.1 }),
     )
     const roof = new THREE.Mesh(
       new THREE.ConeGeometry(1.65, 1, 4),
-      new THREE.MeshPhongMaterial({ color: 0x7c3aed, shininess: 80 }),
+      new THREE.MeshPhongMaterial({ color: 0x059669, shininess: 80 }),
     )
     roof.position.y = 1.25
     roof.rotation.y = Math.PI / 4
     houseGroup.add(walls, roof)
     scene.add(houseGroup)
 
-    const orbitColors = [0x4f46e5, 0xf59e0b, 0x10b981, 0x7c3aed, 0x4f46e5, 0xf59e0b]
+    const orbitColors = [0x10b981, 0xf59e0b, 0x34d399, 0x059669, 0x10b981, 0xf59e0b]
     for (let index = 0; index < 6; index += 1) {
       const sphere = new THREE.Mesh(
         new THREE.SphereGeometry(0.14, 24, 24),
@@ -58,7 +58,7 @@ export default function HomeScene() {
     const particleGeo = new THREE.BufferGeometry()
     particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
     const particleMaterial = new THREE.PointsMaterial({
-      color: 0x4f46e5,
+      color: 0x10b981,
       size: 0.035,
       transparent: true,
       opacity: 0.52,
@@ -66,7 +66,7 @@ export default function HomeScene() {
     const particles = new THREE.Points(particleGeo, particleMaterial)
     scene.add(particles)
 
-    const grid = new THREE.GridHelper(8, 20, 0x4f46e5, 0xeef2ff)
+    const grid = new THREE.GridHelper(8, 20, 0x10b981, 0xe8f7ef)
     grid.position.y = -1.2
     grid.material.opacity = 0.18
     grid.material.transparent = true

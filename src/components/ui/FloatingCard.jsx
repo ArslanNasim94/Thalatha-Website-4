@@ -6,7 +6,7 @@ export default function FloatingCard({ children, className = '' }) {
       tiltMaxAngleX={8}
       tiltMaxAngleY={8}
       glareEnable
-      glareColor="#4F46E5"
+      glareColor="#10B981"
       glareMaxOpacity={0.12}
       transitionSpeed={400}
     >
