@@ -1,0 +1,270 @@
+# THALATHA — CURSOR PROJECT RULES
+# These rules apply globally to every file in this project.
+# Cursor must follow these without exception.
+
+---
+
+## 1. PROJECT IDENTITY
+
+- Project name: **Thalatha**
+- Product: Premium home services mobile app (iOS + Android)
+- Core flow: Record video → receive provider bids → pick quote → connect via WhatsApp
+- Page goal: Award-winning animated landing page (Awwwards / FWA level quality)
+- Reference site: https://admin-dev.laravel.thalatha.cloud/
+
+---
+
+## 2. BRAND COLORS — NEVER CHANGE THESE
+
+```
+--color-primary:     #4F46E5   /* Indigo */
+--color-secondary:   #7C3AED   /* Violet */
+--color-accent:      #F59E0B   /* Amber */
+--color-bg:          #F8FAFC   /* Off-white */
+--color-white:       #FFFFFF
+--color-text-dark:   #0F172A   /* Slate 900 */
+--color-text-mid:    #475569   /* Slate 600 */
+--color-success:     #10B981
+--color-lavender:    #EEF2FF   /* Indigo 50 */
+--color-border:      #E2E8F0
+--gradient-brand:    linear-gradient(135deg, #4F46E5, #7C3AED)
+```
+
+Never introduce colors outside this palette without explicit instruction.
+
+---
+
+## 3. TYPOGRAPHY — ALWAYS USE THESE
+
+```css
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+--font-primary: 'Plus Jakarta Sans', sans-serif;  /* All headlines */
+--font-body:    'Inter', sans-serif;               /* All body text */
+
+--text-hero:  clamp(2.5rem, 6vw, 5rem);
+--text-h2:    clamp(1.8rem, 4vw, 3rem);
+--text-h3:    clamp(1.2rem, 2vw, 1.75rem);
+--text-body:  1rem;
+--text-small: 0.875rem;
+
+--lh-tight:   1.1;
+--lh-heading: 1.25;
+--lh-body:    1.65;
+```
+
+---
+
+## 4. TECH STACK — ALWAYS USE, NEVER REPLACE
+
+| Package | Purpose |
+|---|---|
+| gsap + @gsap/react | All scroll and timeline animations |
+| three + @react-three/fiber + @react-three/drei | 3D scenes |
+| framer-motion | Component-level motion |
+| lenis | Smooth scrolling |
+| split-type | Text split for character/word/line reveals |
+| anime.js | Icon morphing, number scramble |
+| @studio-freight/lenis | Smooth scroll (alias) |
+| react-intersection-observer | Lazy-trigger animations |
+| react-parallax-tilt | Card hover tilt effect |
+| react-countup | Animated stat counters |
+| swiper | Carousels and sliders |
+| @radix-ui/react-dialog | Accessible modals |
+
+Do not swap any of these for alternatives.
+
+---
+
+## 5. FRAMEWORK RULES
+
+- If the project is **Next.js**: add `"use client"` at the top of EVERY animation component.
+- If **Vite/React**: proceed normally, no `"use client"` needed.
+- All GSAP plugins must be registered once in `App.jsx` or the top-level entry:
+  ```js
+  gsap.registerPlugin(ScrollTrigger, ScrollSmoother)
+  ```
+- Lenis must be synced with GSAP ticker:
+  ```js
+  const lenis = new Lenis({ duration: 1.4, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) })
+  lenis.on('scroll', ScrollTrigger.update)
+  gsap.ticker.add((time) => { lenis.raf(time * 1000) })
+  gsap.ticker.lagSmoothing(0)
+  ```
+
+---
+
+## 6. FILE STRUCTURE — CREATE EXACTLY THIS
+
+```
+src/
+├── components/
+│   ├── layout/
+│   │   ├── Navbar.jsx
+│   │   └── Footer.jsx
+│   ├── sections/
+│   │   ├── Hero.jsx
+│   │   ├── Stats.jsx
+│   │   ├── HowItWorks.jsx
+│   │   ├── Features.jsx
+│   │   ├── Services.jsx
+│   │   ├── AppPreview.jsx
+│   │   ├── Testimonials.jsx
+│   │   └── Download.jsx
+│   ├── ui/
+│   │   ├── CustomCursor.jsx
+│   │   ├── ParticleField.jsx
+│   │   ├── MagneticButton.jsx
+│   │   ├── TextReveal.jsx
+│   │   ├── FloatingCard.jsx
+│   │   └── ScrollProgress.jsx
+│   └── three/
+│       ├── HomeScene.jsx
+│       └── PhoneModel.jsx
+├── hooks/
+│   ├── useSmoothScroll.js
+│   ├── useGSAP.js
+│   └── useMagnet.js
+├── utils/
+│   └── animations.js
+├── assets/
+└── App.jsx
+```
+
+Do not collapse, merge, or rename any of these files.
+
+---
+
+## 7. ANIMATION STANDARDS
+
+### Text Reveal (apply to ALL headlines)
+```js
+import SplitType from 'split-type'
+const text = new SplitType('.reveal-text', { types: 'lines,words,chars' })
+gsap.from(text.words, {
+  y: '110%', opacity: 0, rotateX: -20,
+  stagger: 0.05, duration: 1, ease: 'power4.out',
+  scrollTrigger: { trigger: '.reveal-text', start: 'top 85%' }
+})
+```
+
+### Section Entry (apply to ALL sections)
+```js
+gsap.utils.toArray('.section').forEach(section => {
+  gsap.from(section, {
+    y: 60, opacity: 0, duration: 1, ease: 'power3.out',
+    scrollTrigger: { trigger: section, start: 'top 80%', end: 'top 50%', toggleActions: 'play none none reverse' }
+  })
+})
+```
+
+### Magnetic Button (apply to ALL `.magnetic` elements)
+```js
+btn.addEventListener('mousemove', (e) => {
+  const rect = btn.getBoundingClientRect()
+  const x = e.clientX - rect.left - rect.width / 2
+  const y = e.clientY - rect.top - rect.height / 2
+  gsap.to(btn, { x: x * 0.35, y: y * 0.35, duration: 0.4, ease: 'power2.out' })
+})
+btn.addEventListener('mouseleave', () => {
+  gsap.to(btn, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1, 0.4)' })
+})
+```
+
+---
+
+## 8. RESPONSIVE BREAKPOINTS
+
+```css
+/* Mobile  */ @media (max-width: 768px)
+/* Tablet  */ @media (min-width: 769px) and (max-width: 1024px)
+/* Desktop */ @media (min-width: 1025px)
+/* Wide    */ @media (min-width: 1440px)
+```
+
+- Section padding: min `80px` top/bottom on mobile, `120px` on desktop.
+- All 2-column layouts stack on mobile.
+
+---
+
+## 9. MOBILE & PERFORMANCE RULES
+
+- **Disable Three.js heavy scenes on mobile** — detect touch: `'ontouchstart' in window` — use fallback gradient animation.
+- **Disable custom cursor on touch devices**.
+- **Reduce particle count** to 500 on mobile (2000 on desktop).
+- Three.js renderer: `antialias: false` on mobile, `pixelRatio: Math.min(window.devicePixelRatio, 2)`.
+- Use `will-change: transform` ONLY on actively animating elements. Remove it after animation ends.
+- Lazy load ALL images with `loading="lazy"`.
+- Use `IntersectionObserver` before initializing heavy Three.js scenes.
+- Dispose Three.js geometries and materials on component unmount.
+- Respect `prefers-reduced-motion`:
+  ```js
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (!prefersReducedMotion) { /* init all GSAP animations */ }
+  ```
+- Use `gsap.matchMedia()` for responsive animation configurations.
+- Lighthouse Performance target: **90+**.
+
+---
+
+## 10. ASSET RULES
+
+- Logo and app screenshots live in `/assets/` folder.
+- Use the **primary logo** in the Navbar.
+- Use the **white version** of the logo in the Download CTA section.
+- If `/assets/` is empty, use these fallback screenshot URLs:
+  - `https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/56/a1/77/56a17766-dbef-23b5-ff9a-873cb6f7ce0f/1290_x_3190.jpg/600x1300bb.jpg`
+  - `https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/b6/d1/24/b6d124d7-56cf-586f-0cb3-22907e9dc342/1284_x_2780.jpg/600x1300bb.jpg`
+  - `https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/f5/49/2f/f5492fd2-a06b-d06a-f6a7-7bfd60b8a418/1290_x_3191.jpg/600x1300bb.jpg`
+
+---
+
+## 11. LINKS — PRESERVE EXACTLY
+
+```
+App Store:    https://apps.apple.com/us/app/thalatha/id6755521133
+Google Play:  https://play.google.com/store/apps/details?id=com.thalatha.mobile
+About:        /about
+Careers:      /careers
+Contact:      /contact
+Privacy:      /privacy
+Terms:        /terms
+Cookie:       /cookie-policy
+GDPR:         /gdpr
+Accessibility:/accessibility
+Powered by:   https://nizek.com
+```
+
+---
+
+## 12. META & SEO
+
+- Page `<title>`: `Thalatha - Premium Home Services Made Simple`
+- Meta description must be set.
+- Favicon must use the file from `/assets/`.
+
+---
+
+## 13. CODE QUALITY RULES
+
+- No inline styles unless strictly necessary for dynamic GSAP values.
+- All CSS custom properties go in `:root {}`.
+- Component files must not exceed ~300 lines — split if needed.
+- No `console.log` in production code.
+- All Three.js scenes must clean up on unmount (`useEffect` return).
+- Use semantic HTML: `<section>`, `<nav>`, `<main>`, `<footer>`, `<article>`.
+- All interactive elements must have accessible `aria-label` attributes.
+
+---
+
+## 14. DO NOT
+
+- Do NOT change brand colors.
+- Do NOT use dark backgrounds (the theme is light, airy, premium).
+- Do NOT skip Lenis initialization.
+- Do NOT forget `"use client"` on animation components in Next.js.
+- Do NOT use `localStorage` or `sessionStorage` unless explicitly asked.
+- Do NOT hardcode font sizes in `px` — use CSS custom properties or `clamp()`.
+- Do NOT remove the scroll progress bar.
+- Do NOT skip the preloader.
+- Do NOT merge section components into one file.
